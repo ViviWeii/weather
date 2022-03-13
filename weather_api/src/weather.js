@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import FutureWeather from './futureWeather';
-import { ReactComponent as SunnyIcon } from "./images/sunny.svg"
-import MaxTemperatureIcon from "./images/max_temperature.svg";
-import MinTemperatureIcon from "./images/min_temperature.svg";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination } from "swiper";
+import "swiper/css";
+import WeatherIcon from './WeatherIcon';
 import UvIcon from "./images/uv.svg";
 import WindSpeedIcon from "./images/wind_speed.svg";
 import HumidityIcon from "./images/humidity.svg";
@@ -64,16 +64,7 @@ const Temperature = styled.div`
     font-size: 60px;
 `;
 
-const Sunny = styled.div`
-    display: inline-block;
-    vertical-align: middle;
-    svg {
-        width: 60px;
-        height: auto;
-    }
-`;
-
-const MaxMinTemperature = styled.div`
+const ElementDiv = styled.div`
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -81,14 +72,12 @@ const MaxMinTemperature = styled.div`
     width: 20%;
 `;
 
-const MaxTemperature = styled.span`
-    display: flex;
-    margin-right: 20px;
+const ElementSpan = styled.span`
+    margin-right: 5px;
 `;
 
-const MinTemperature = styled.span`
-    display: flex;
-    margin-right: 20px;
+const MaxMinTemperature = styled.span`
+    margin-right: 5px;
 `;
 
 const WeatherElement = styled.div`
@@ -131,7 +120,7 @@ const WeekCard = styled.div`
 `;
 
 const WeekUl = styled.ul`
-    width: 1200px;
+    width: 1600px;
     height: 200px;
 `;
 
@@ -150,6 +139,7 @@ const WeekElement = styled.li`
     img {
         width: 25px;
     }
+    
 `;
 
 const Weather = () => {
@@ -157,8 +147,10 @@ const Weather = () => {
     const [nextWeekWeather, setNextWeekWeather] = useState({
         future: [
             {
+                week: new Date(),
                 PoP: "降雨機率",
                 Wx: "氣象描述",
+                WxCode: 1,
                 MaxT: "最高溫度",
                 MinT: "最低溫度",
                 UVI: "紫外線指數"
@@ -168,12 +160,14 @@ const Weather = () => {
 
     // 現在天氣觀測報告
     const [currentWeather, setCurrentWeather] = useState({
-        // observationTime: "2022/3/11 16:28:00",
-        // locationName: "臺中市",
-        // description: "晴朗",
-        // temperature: 26,
-        // minTemperature: 15,
-        // maxTemperature: 27
+        observationTime: "",
+        locationName: "臺中",
+        Wx: "",
+        weatherCode: 1,
+        CI: "",
+        temperature: 0,
+        minTemperature: 0,
+        maxTemperature: 0
     });
 
 
@@ -181,6 +175,7 @@ const Weather = () => {
     useEffect(() => {
         getNextWeekData();
         getCurrentData();
+        getWeatherElement();
         // 重新渲染後 dependencies 元素沒變則不執行
     }, []);
 
@@ -195,83 +190,79 @@ const Weather = () => {
             .then(
                 (data) => {
                     const locationData = data.records.locations[0].location[0].weatherElement;
-                    // const weatherElements = locationData.map(
-                    //     (item, index) => {
-                    //         if(["PoP12h","Wx","MinT","MaxT","UVI"].includes(item.elementName)){
-                    //             return item.time;
-
-                    //     }
-
-                    //         }
-
-                    // );
                     let PoP = locationData.filter(x => x.elementName === "PoP12h")[0].time;
                     let Wx = locationData.filter(x => x.elementName === "Wx")[0].time;
                     let MinT = locationData.filter(x => x.elementName === "MinT")[0].time;
                     let MaxT = locationData.filter(x => x.elementName === "MaxT")[0].time;
                     let UVI = locationData.filter(x => x.elementName === "UVI")[0].time;
-                    console.log(PoP[2].elementValue[0].value)
-                    console.log(Wx)
-                    console.log(MinT[2].elementValue[0].value)
-                    console.log(MaxT[2].elementValue[0].value)
-                    console.log(UVI)
-
+                    
+                    console.log(PoP)
 
                     setNextWeekWeather({
                         future: [
                             {
-                                PoP: PoP[2].elementValue[0].value / PoP[3].elementValue[0].value,
+                                week: new Date(UVI[1].startTime),
+                                PoP: (parseInt(PoP[2].elementValue[0].value) + parseInt(PoP[3].elementValue[0].value)) / 2 || 0,
                                 Wx: Wx[3].elementValue[0].value,
-                                MaxT: MaxT[2].elementValue[0].value / MaxT[3].elementValue[0].value,
-                                MinT: MinT[2].elementValue[0].value / MinT[3].elementValue[0].value,
+                                WxCode: Wx[3].elementValue[1].value,
+                                MaxT: (parseInt(MaxT[2].elementValue[0].value) + parseInt(MaxT[3].elementValue[0].value)) / 2,
+                                MinT: (parseInt(MinT[2].elementValue[0].value) + parseInt(MinT[3].elementValue[0].value)) / 2,
                                 UVI: UVI[1].elementValue[0].value
                             }
                             ,
                             {
-                                PoP: PoP[4].elementValue[0].value / PoP[5].elementValue[0].value,
+                                week: new Date(UVI[2].startTime),
+                                PoP: (parseInt(PoP[4].elementValue[0].value) + parseInt(PoP[5].elementValue[0].value)) / 2 || 0,
                                 Wx: Wx[5].elementValue[0].value,
-                                MaxT: MaxT[4].elementValue[0].value / MaxT[5].elementValue[0].value,
-                                MinT: MinT[4].elementValue[0].value / MinT[5].elementValue[0].value,
+                                WxCode: Wx[5].elementValue[1].value,
+                                MaxT: (parseInt(MaxT[4].elementValue[0].value) + parseInt(MaxT[5].elementValue[0].value)) / 2,
+                                MinT: (parseInt(MinT[4].elementValue[0].value) + parseInt(MinT[5].elementValue[0].value)) / 2,
                                 UVI: UVI[2].elementValue[0].value
                             }
                             ,
                             {
-                                PoP: PoP[6].elementValue[0].value / PoP[7].elementValue[0].value,
+                                week: new Date(UVI[3].startTime),
+                                PoP: (parseInt(PoP[6].elementValue[0].value) + parseInt(PoP[7].elementValue[0].value)) / 2 || 0,
                                 Wx: Wx[7].elementValue[0].value,
-                                MaxT: MaxT[6].elementValue[0].value / MaxT[7].elementValue[0].value,
-                                MinT: MinT[6].elementValue[0].value / MinT[7].elementValue[0].value,
+                                WxCode: Wx[7].elementValue[1].value,
+                                MaxT: (parseInt(MaxT[6].elementValue[0].value) + parseInt(MaxT[7].elementValue[0].value)) / 2,
+                                MinT: (parseInt(MinT[6].elementValue[0].value) + parseInt(MinT[7].elementValue[0].value)) / 2,
                                 UVI: UVI[3].elementValue[0].value
                             }
                             ,
                             {
-                                PoP: PoP[8].elementValue[0].value / PoP[9].elementValue[0].value,
+                                week: new Date(UVI[4].startTime),
+                                PoP: (parseInt(PoP[8].elementValue[0].value) + parseInt(PoP[9].elementValue[0].value)) / 2 || 0,
                                 Wx: Wx[9].elementValue[0].value,
-                                MaxT: MaxT[8].elementValue[0].value / MaxT[9].elementValue[0].value,
-                                MinT: MinT[8].elementValue[0].value / MinT[9].elementValue[0].value,
+                                WxCode: Wx[9].elementValue[1].value,
+                                MaxT: (parseInt(MaxT[8].elementValue[0].value) + parseInt(MaxT[9].elementValue[0].value)) / 2,
+                                MinT: (parseInt(MinT[8].elementValue[0].value) + parseInt(MinT[9].elementValue[0].value)) / 2,
                                 UVI: UVI[4].elementValue[0].value
                             }
                             ,
                             {
-                                PoP: PoP[10].elementValue[0].value / PoP[11].elementValue[0].value,
+                                week: new Date(UVI[5].startTime),
+                                PoP: (parseInt(PoP[10].elementValue[0].value) + parseInt(PoP[11].elementValue[0].value)) / 2 || 0,
                                 Wx: Wx[11].elementValue[0].value,
-                                MaxT: MaxT[10].elementValue[0].value / MaxT[11].elementValue[0].value,
-                                MinT: MinT[10].elementValue[0].value / MinT[11].elementValue[0].value,
+                                WxCode: Wx[11].elementValue[1].value,
+                                MaxT: (parseInt(MaxT[10].elementValue[0].value) + parseInt(MaxT[11].elementValue[0].value)) / 2,
+                                MinT: (parseInt(MinT[10].elementValue[0].value) + parseInt(MinT[11].elementValue[0].value)) / 2,
                                 UVI: UVI[5].elementValue[0].value
                             }
                             ,
                             {
-                                PoP: PoP[12].elementValue[0].value / PoP[13].elementValue[0].value,
+                                week: new Date(UVI[6].startTime),
+                                PoP: (parseInt(PoP[12].elementValue[0].value) + parseInt(PoP[13].elementValue[0].value)) / 2 || 0,
                                 Wx: Wx[13].elementValue[0].value,
-                                MaxT: MaxT[12].elementValue[0].value / MaxT[13].elementValue[0].value,
-                                MinT: MinT[12].elementValue[0].value / MinT[13].elementValue[0].value,
+                                WxCode: Wx[13].elementValue[1].value,
+                                MaxT: (parseInt(MaxT[12].elementValue[0].value) + parseInt(MaxT[13].elementValue[0].value)) / 2,
+                                MinT: (parseInt(MinT[12].elementValue[0].value) + parseInt(MinT[13].elementValue[0].value)) / 2,
                                 UVI: UVI[6].elementValue[0].value
                             }
                         ]
                     })
                 }
             )
-
-
     }
 
     const getCurrentData = () => {
@@ -295,11 +286,10 @@ const Weather = () => {
                         });
                     // 風速(公尺/秒) 溫度 相對溼度 小時紫外線指數 本日最高溫 本日最低溫 十分鐘天氣現象描述 縣市 鄉鎮
                     // WDSD TEMP HUMD H_UVI D_TX D_TN Weather CITY TOWN
-                    setCurrentWeather((prevState)=>({
+                    setCurrentWeather((prevState) => ({
                         ...prevState,
                         observationTime: locationData.time.obsTime,
                         locationName: locationData.locationName,
-                        description: weatherElements.Weather,
                         temperature: weatherElements.TEMP,
                         minTemperature: weatherElements.D_TN,
                         maxTemperature: weatherElements.D_TX,
@@ -312,6 +302,37 @@ const Weather = () => {
             .catch(
                 err => console.log(err)
             );
+    }
+
+    const getWeatherElement = () => {
+        let url = "https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-946AA758-015A-4355-9AB4-040115765F90&locationName=%E8%87%BA%E4%B8%AD%E5%B8%82";
+        fetch(
+            url
+        )
+            .then(
+                res => res.json()
+            )
+            .then(
+                (data) => {
+                    const locationData = data.records.location[0].weatherElement;
+                    const weatherElements = locationData.reduce(
+                        (element, item) => {
+                            if (["Wx", "PoP", "CI"].includes(item.elementName)) {
+                                element[item.elementName] = item.time[0].parameter;
+                            }
+                            return element;
+
+                        }, {})
+
+                    setCurrentWeather((prevState) => ({
+                        ...prevState,
+                        Wx: weatherElements.Wx.parameterName,
+                        weatherCode: weatherElements.Wx.parameterValue,
+                        PoP: weatherElements.PoP.parameterName,
+                        CI: weatherElements.CI.parameterName
+                    }));
+                }
+            )
     }
 
     return (
@@ -336,20 +357,20 @@ const Weather = () => {
                     </LocationTime>
                     <TemperatureDiv>
                         <Temperature>
-                            <Sunny>
-                                <SunnyIcon />
-                            </Sunny>
+                            <WeatherIcon currentWeatherCode={currentWeather.weatherCode} moment="moon" />
                             {Math.round(currentWeather.temperature)}°
                         </Temperature>
-                        <MaxMinTemperature>
-                            {currentWeather.description}
-                            <MaxTemperature>
-                                <img src={MaxTemperatureIcon} alt="最高溫度" />{Math.round(currentWeather.maxTemperature)}°
-                            </MaxTemperature>
-                            <MinTemperature>
-                                <img src={MinTemperatureIcon} alt="最低溫度" />{Math.round(currentWeather.minTemperature)}°
-                            </MinTemperature>
-                        </MaxMinTemperature>
+                        <ElementDiv>
+                            <ElementSpan>
+                                {currentWeather.Wx}
+                            </ElementSpan>
+                            <ElementSpan>
+                                {currentWeather.CI}
+                            </ElementSpan>
+                            <MaxMinTemperature>
+                                {Math.round(currentWeather.maxTemperature)}°/{Math.round(currentWeather.minTemperature)}°
+                            </MaxMinTemperature>
+                        </ElementDiv>
                     </TemperatureDiv>
                 </WeatherCard>
                 <WeatherCard>
@@ -376,8 +397,36 @@ const Weather = () => {
                     <span>最後觀測時間:{currentWeather.observationTime}</span>
                     <img src={ReLoadIcon} onClick={getCurrentData} alt="重取資料" />
                 </ReLoadDiv>
+                <WeekCard>
+                    <Swiper
+                        slidesPerView={2}
+                        spaceBetween={0}
+                        pagination={{
+                            clickable: true,
+                        }}
+                        modules={[Pagination]}
+                        className="mySwiper"
+                    >
+                        <WeekUl>
+                            {nextWeekWeather.future.map((item, index) => (
+                                <SwiperSlide key={index}>
+                                    <WeekElement>
+                                        <Span style={{ textAlign: "center" }}>
+                                            {new Intl.DateTimeFormat("zh-TW", {
+                                                weekday: "long",
+                                            }).format(item.week)}
+                                        </Span>
+                                        <img src={PopIcon} alt="降雨機率" />{Math.round(item.PoP)}%
+                                        <span>{item.Wx}{item.WxCode}</span>
+                                        <span>{Math.round(item.MaxT)}°/{Math.round(item.MinT)}°</span>
+                                        <img src={UvIcon} alt="紫外線指數" />紫外線指數 {Math.round(item.UVI)}
+                                    </WeekElement>
+                                </SwiperSlide>
+                            ))}
 
-                <FutureWeather />
+                        </WeekUl>
+                    </Swiper>
+                </WeekCard>
             </WeatherDiv>
         </Container>
     )

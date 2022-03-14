@@ -5,6 +5,7 @@ import { Pagination } from "swiper";
 import "swiper/css";
 // emotion套件
 import styled from "@emotion/styled";
+import weatherImg from "./images/weather.png";
 import WeatherIcon from './WeatherIcon';
 import UvIcon from "./images/uv.svg";
 import WindSpeedIcon from "./images/wind_speed.svg";
@@ -26,6 +27,9 @@ const WeatherDiv = styled.div`
     box-sizing: border-box;
     border-radius: 10px;
     padding: 0 15px;
+    @media (max-width: 520px){
+        width: 100%;
+    }
 `;
 
 const WeatherImg = styled.div`
@@ -35,15 +39,21 @@ const WeatherImg = styled.div`
     height: 160px;
     line-height: 160px;
     border-radius: 10px;
-    background-image: url(./img/weather.png);
+    background-image: url(${weatherImg});
+    @media (max-width: 520px){
+        width: 100%;
+    }
 `;
 
 const WeatherCard = styled.div`
     margin-top: 15px;
-    min-width: 400px;
+    min-width: 300px;
     background-color: #f9f9f9;
     border-radius: 10px;
     padding: 5px 15px;
+    @media (max-width: 520px){
+        width: 95%;
+    }
 `;
 
 const LocationTime = styled.div`
@@ -121,6 +131,9 @@ const WeekCard = styled.div`
     margin-top: 15px;
     border-radius: 10px;
     background-color: #f9f9f9;
+    @media (max-width: 520px){
+        width: 100%;
+    }
 `;
 
 const WeekUl = styled.ul`
@@ -144,7 +157,9 @@ const WeekElement = styled.li`
     img {
         width: 25px;
     }
-    
+    @media (max-width: 520px){
+        width: 80%;
+    }
 `;
 
 const WeekDiv = styled.div`

@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
+// Swiper套件
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper";
 import "swiper/css";
+// emotion套件
+import styled from "@emotion/styled";
 import WeatherIcon from './WeatherIcon';
 import UvIcon from "./images/uv.svg";
 import WindSpeedIcon from "./images/wind_speed.svg";
 import HumidityIcon from "./images/humidity.svg";
 import ReLoadIcon from "./images/reload.svg";
 import PopIcon from "./images/pop.svg";
-import styled from "@emotion/styled";
 
 const Container = styled.div`
     width: 100%;
@@ -18,8 +20,8 @@ const Container = styled.div`
 
 const WeatherDiv = styled.div`
     min-width: 400px;
-    height: 800px;
-    margin-top: 20px;
+    height: 850px;
+    margin: 20px 0;
     box-shadow: 0 1px 3px 0 #999999;
     box-sizing: border-box;
     border-radius: 10px;
@@ -47,7 +49,6 @@ const WeatherCard = styled.div`
 const LocationTime = styled.div`
     display: flex;
     flex-direction: column;
-    background-color: #f9f9f9;
 `;
 
 const Span = styled.span`
@@ -116,23 +117,27 @@ const ReLoadDiv = styled.div`
 
 const WeekCard = styled.div`
     width: 430px;
+    height: 220px;
     margin-top: 15px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
 `;
 
 const WeekUl = styled.ul`
     width: 1600px;
-    height: 200px;
 `;
 
 const WeekElement = styled.li`
+    font-size: 14px;
     user-select: none;
-    margin-right: 100px;
+    margin-left: 20px;
+    margin-top: 10px;
     display: inline-block;
-    background-color: #f9f9f9;
+    background-color: #fff;
     border-radius: 10px;
     width: 150px;
-    height: 190px;
-    padding: 5px 15px;
+    height: 180px;
+    padding: 10px 15px;
     span {
         display: block;
     }
@@ -142,7 +147,74 @@ const WeekElement = styled.li`
     
 `;
 
+const WeekDiv = styled.div`
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+`;
+
+const WeekSpan = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+`;
+
+const WeekDivElement = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+
+const ImgSpan = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+`;
+
+const WeekImg = styled.div`
+    display: flex;
+    align-items: center;
+`;
+
 const Weather = () => {
+
+    // 取得目前時間
+    const date = new Date();
+    let currentDay = date.getDay();
+    switch (currentDay) {
+        case 0:
+            currentDay = "日";
+            break;
+        case 1:
+            currentDay = "一";
+            break;
+        case 2:
+            currentDay = "二"
+            break;
+        case 3:
+            currentDay = "三";
+            break;
+        case 4:
+            currentDay = "四";
+            break;
+        case 5:
+            currentDay = "五";
+            break;
+        case 6:
+            currentDay = "六";
+            break;
+    }
+    const currentDate = new Intl.DateTimeFormat("zh-TW", {
+        month: "narrow",
+        day: "numeric",
+    }).format(new Date(date));
+    const currentTime = new Intl.DateTimeFormat("zh-TW", {
+        hour: "numeric",
+        minute: "2-digit"
+    }).format(new Date(date));
+    const current = `${currentDate},週${currentDay} ${currentTime}`;
+
     // 未來一周天氣預報
     const [nextWeekWeather, setNextWeekWeather] = useState({
         future: [
@@ -160,16 +232,16 @@ const Weather = () => {
 
     // 現在天氣觀測報告
     const [currentWeather, setCurrentWeather] = useState({
-        observationTime: "",
+        observationTime: new Date(),
         locationName: "臺中",
         Wx: "",
         weatherCode: 1,
         CI: "",
         temperature: 0,
         minTemperature: 0,
-        maxTemperature: 0
+        maxTemperature: 0,
+        PoP: 0,
     });
-
 
     // 進入畫面即載入資料
     useEffect(() => {
@@ -179,6 +251,7 @@ const Weather = () => {
         // 重新渲染後 dependencies 元素沒變則不執行
     }, []);
 
+        // 未來一周天氣預報API
     const getNextWeekData = () => {
         let url = "https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-091?Authorization=CWB-946AA758-015A-4355-9AB4-040115765F90&locationName=%E8%87%BA%E4%B8%AD%E5%B8%82";
         fetch(
@@ -195,7 +268,7 @@ const Weather = () => {
                     let MinT = locationData.filter(x => x.elementName === "MinT")[0].time;
                     let MaxT = locationData.filter(x => x.elementName === "MaxT")[0].time;
                     let UVI = locationData.filter(x => x.elementName === "UVI")[0].time;
-                    
+
                     console.log(PoP)
 
                     setNextWeekWeather({
@@ -265,6 +338,7 @@ const Weather = () => {
             )
     }
 
+    // 現在天氣觀測報告API
     const getCurrentData = () => {
         let url = "https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0003-001?Authorization=CWB-946AA758-015A-4355-9AB4-040115765F90&locationName=臺中";
         fetch(
@@ -275,7 +349,7 @@ const Weather = () => {
             )
             .then(
                 (data) => {
-                    // console.log("data:", data.records.location[0]);
+                    console.log("data:", data.records.location[0]);
                     const locationData = data.records.location[0];
                     const weatherElements = locationData.weatherElement.reduce(
                         (element, item) => {
@@ -304,6 +378,7 @@ const Weather = () => {
             );
     }
 
+    // 現在天氣觀測報告API
     const getWeatherElement = () => {
         let url = "https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=CWB-946AA758-015A-4355-9AB4-040115765F90&locationName=%E8%87%BA%E4%B8%AD%E5%B8%82";
         fetch(
@@ -335,6 +410,12 @@ const Weather = () => {
             )
     }
 
+    // 時間改為 xxxx-xx-xx
+    const changeDate = new Date().getHours();
+    // 判斷早晚
+    const moment = (6 <= changeDate && changeDate <= 18) ? "sun" : "moon";
+
+
     return (
         <Container>
             <WeatherDiv>
@@ -346,18 +427,12 @@ const Weather = () => {
                         <Span>{currentWeather.locationName}市</Span>
                         <span>
                             {/* Intl API 顯示目前時間 */}
-                            {new Intl.DateTimeFormat("zh-TW", {
-                                month: "numeric",
-                                day: "numeric",
-                                weekday: "long",
-                                hour: "numeric",
-                                minute: "numeric",
-                            }).format(new Date(Date.now()))}
+                            {current}
                         </span>
                     </LocationTime>
                     <TemperatureDiv>
                         <Temperature>
-                            <WeatherIcon currentWeatherCode={currentWeather.weatherCode} moment="moon" />
+                            <WeatherIcon currentWeatherCode={currentWeather.weatherCode} moment={moment} />
                             {Math.round(currentWeather.temperature)}°
                         </Temperature>
                         <ElementDiv>
@@ -374,6 +449,12 @@ const Weather = () => {
                     </TemperatureDiv>
                 </WeatherCard>
                 <WeatherCard>
+                    <WeatherElement>
+                        <Img>
+                            <img src={PopIcon} alt="降雨機率" />降雨機率
+                        </Img>
+                        {Math.round(currentWeather.PoP)}%
+                    </WeatherElement>
                     <WeatherElement>
                         <Img>
                             <img src={UvIcon} alt="紫外線指數" />紫外線指數
@@ -394,7 +475,12 @@ const Weather = () => {
                     </WeatherElement>
                 </WeatherCard>
                 <ReLoadDiv>
-                    <span>最後觀測時間:{currentWeather.observationTime}</span>
+                    最後觀測時間: {new Intl.DateTimeFormat("zh-TW", {
+                        month: "narrow",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric"
+                    }).format(new Date(currentWeather.observationTime))}
                     <img src={ReLoadIcon} onClick={getCurrentData} alt="重取資料" />
                 </ReLoadDiv>
                 <WeekCard>
@@ -416,10 +502,27 @@ const Weather = () => {
                                                 weekday: "long",
                                             }).format(item.week)}
                                         </Span>
-                                        <img src={PopIcon} alt="降雨機率" />{Math.round(item.PoP)}%
-                                        <span>{item.Wx}{item.WxCode}</span>
-                                        <span>{Math.round(item.MaxT)}°/{Math.round(item.MinT)}°</span>
-                                        <img src={UvIcon} alt="紫外線指數" />紫外線指數 {Math.round(item.UVI)}
+                                        <WeekDiv>
+                                            <WeatherIcon currentWeatherCode={item.WxCode} moment="sun" />
+                                            <WeekSpan>
+                                                <span>{item.Wx}</span>
+                                                <span>{Math.round(item.MaxT)}°/{Math.round(item.MinT)}°</span>
+                                            </WeekSpan>
+                                        </WeekDiv>
+                                        <WeekDivElement>
+                                            <ImgSpan>
+                                                <WeekImg>
+                                                    <img src={PopIcon} alt="降雨機率" />降雨機率
+                                                </WeekImg>
+                                                {Math.round(item.PoP)}%
+                                            </ImgSpan>
+                                            <ImgSpan>
+                                                <WeekImg>
+                                                    <img src={UvIcon} alt="紫外線指數" />紫外線指數
+                                                </WeekImg>
+                                                {Math.round(item.UVI)}
+                                            </ImgSpan>
+                                        </WeekDivElement>
                                     </WeekElement>
                                 </SwiperSlide>
                             ))}

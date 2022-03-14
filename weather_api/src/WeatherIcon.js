@@ -20,9 +20,10 @@ import { ReactComponent as MoonSnowIcon } from "./images/moon_snow.svg";
 const IconContainer = styled.div`
     display: inline-block;
     vertical-align: middle;
+    margin-right: 10px;
     svg {
-        width: 60px;
-        height: auto;
+        width: 65px;
+        height: 65px;
     }
 `;
 

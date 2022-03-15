@@ -24,7 +24,6 @@ const WeatherDiv = styled.div`
     height: 850px;
     margin: 20px 0;
     box-shadow: 0 1px 3px 0 #999999;
-    background-color: #000;
     box-sizing: border-box;
     border-radius: 10px;
     padding: 0 15px;

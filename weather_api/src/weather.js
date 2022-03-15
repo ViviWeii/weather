@@ -20,10 +20,11 @@ const Container = styled.div`
 `;
 
 const WeatherDiv = styled.div`
-    min-width: 400px;
+    width: 450px;
     height: 850px;
     margin: 20px 0;
     box-shadow: 0 1px 3px 0 #999999;
+    background-color: #000;
     box-sizing: border-box;
     border-radius: 10px;
     padding: 0 15px;
@@ -33,27 +34,21 @@ const WeatherDiv = styled.div`
 `;
 
 const WeatherImg = styled.div`
-    min-width: 400px;
+    width: 100%;
     margin-top: -5px;
     text-align: center;
     height: 160px;
     line-height: 160px;
     border-radius: 10px;
     background-image: url(${weatherImg});
-    @media (max-width: 520px){
-        width: 100%;
-    }
 `;
 
 const WeatherCard = styled.div`
     margin-top: 15px;
-    min-width: 300px;
+    width: 95%;
     background-color: #f9f9f9;
     border-radius: 10px;
-    padding: 5px 15px;
-    @media (max-width: 520px){
-        width: 95%;
-    }
+    padding: 5px 10px;
 `;
 
 const LocationTime = styled.div`
@@ -80,7 +75,6 @@ const ElementDiv = styled.div`
     flex-direction: column;
     align-items: flex-end;
     justify-content: center;
-    width: 20%;
 `;
 
 const ElementSpan = styled.span`
@@ -116,7 +110,7 @@ const ReLoadDiv = styled.div`
     align-items: center;
     justify-content: end;
     margin-top: 15px;
-    min-width: 400px;
+    width: 100%;
     padding: 5px 15px;
     img {
         width: 25px;
@@ -126,14 +120,11 @@ const ReLoadDiv = styled.div`
 `;
 
 const WeekCard = styled.div`
-    width: 430px;
+    width: 100%;
     height: 220px;
     margin-top: 15px;
     border-radius: 10px;
     background-color: #f9f9f9;
-    @media (max-width: 520px){
-        width: 100%;
-    }
 `;
 
 const WeekUl = styled.ul`
@@ -157,8 +148,8 @@ const WeekElement = styled.li`
     img {
         width: 25px;
     }
-    @media (max-width: 520px){
-        width: 80%;
+    @media (max-width:470px){
+        margin-left: 0px;
     }
 `;
 

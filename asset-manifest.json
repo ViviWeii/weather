@@ -1,7 +1,8 @@
 {
   "files": {
     "main.css": "/weather_api/static/css/main.92ec90ff.css",
-    "main.js": "/weather_api/static/js/main.e8cb472d.js",
+    "main.js": "/weather_api/static/js/main.314cfde9.js",
+    "static/media/weather.png": "/weather_api/static/media/weather.615862fd572bb75f8d31.png",
     "static/media/sun_snow.svg": "/weather_api/static/media/sun_snow.c46361c3c4c6be9ac89ece97659afc9e.svg",
     "static/media/moon_snow.svg": "/weather_api/static/media/moon_snow.015dc2c775ca88768d854e662eb223eb.svg",
     "static/media/sun_thunderstorm.svg": "/weather_api/static/media/sun_thunderstorm.71e35162fc997ccef41102d0f4509988.svg",
@@ -23,10 +24,10 @@
     "static/media/wind_speed.svg": "/weather_api/static/media/wind_speed.b36af16b5124791734bc648537d19ade.svg",
     "static/media/pop.svg": "/weather_api/static/media/pop.a2cbfbb7302d37a73d9a208f3755d205.svg",
     "main.92ec90ff.css.map": "/weather_api/static/css/main.92ec90ff.css.map",
-    "main.e8cb472d.js.map": "/weather_api/static/js/main.e8cb472d.js.map"
+    "main.314cfde9.js.map": "/weather_api/static/js/main.314cfde9.js.map"
   },
   "entrypoints": [
     "static/css/main.92ec90ff.css",
-    "static/js/main.e8cb472d.js"
+    "static/js/main.314cfde9.js"
   ]
 }

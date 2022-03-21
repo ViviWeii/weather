@@ -29,6 +29,7 @@ const WeatherDiv = styled.div`
     padding: 0 15px;
     @media (max-width: 520px){
         width: 100%;
+        box-shadow: none;
     }
 `;
 
@@ -256,7 +257,7 @@ const Weather = () => {
         // 重新渲染後 dependencies 元素沒變則不執行
     }, []);
 
-        // 未來一周天氣預報API
+    // 未來一周天氣預報API
     const getNextWeekData = () => {
         let url = "https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-091?Authorization=CWB-946AA758-015A-4355-9AB4-040115765F90&locationName=%E8%87%BA%E4%B8%AD%E5%B8%82";
         fetch(
@@ -274,7 +275,7 @@ const Weather = () => {
                     let MaxT = locationData.filter(x => x.elementName === "MaxT")[0].time;
                     let UVI = locationData.filter(x => x.elementName === "UVI")[0].time;
 
-                    console.log(PoP)
+                    // console.log(PoP)
 
                     setNextWeekWeather({
                         future: [
@@ -354,7 +355,7 @@ const Weather = () => {
             )
             .then(
                 (data) => {
-                    console.log("data:", data.records.location[0]);
+                    // console.log("data:", data.records.location[0]);
                     const locationData = data.records.location[0];
                     const weatherElements = locationData.weatherElement.reduce(
                         (element, item) => {
@@ -415,7 +416,7 @@ const Weather = () => {
             )
     }
 
-    // 時間改為 xxxx-xx-xx
+    // 取得目前幾點
     const changeDate = new Date().getHours();
     // 判斷早晚
     const moment = (6 <= changeDate && changeDate <= 18) ? "sun" : "moon";
